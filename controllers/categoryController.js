@@ -1,6 +1,16 @@
+const Category = require("../models/category");
 
+// Map Mongoose errors to proper HTTP status codes
+const handleError = (res, error, message) => {
+  let status = 500;
+  if (error.name === "ValidationError" || error.name === "CastError") {
+    status = 400;
+  } else if (error.code === 11000) {
+    status = 409;
+  }
 
-const Category = require("../models/Category");
+  res.status(status).json({ message, error: error.message });
+};
 
 // Create a category
 const createCategory = async (req, res) => {
@@ -12,10 +22,7 @@ const createCategory = async (req, res) => {
       category,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error creating category",
-      error: error.message,
-    });
+    handleError(res, error, "Error creating category");
   }
 };
 
@@ -26,10 +33,7 @@ const getAllCategories = async (req, res) => {
 
     res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({
-      message: "Error retrieving categories",
-      error: error.message,
-    });
+    handleError(res, error, "Error retrieving categories");
   }
 };
 
@@ -46,10 +50,7 @@ const getCategoryById = async (req, res) => {
 
     res.status(200).json(category);
   } catch (error) {
-    res.status(500).json({
-      message: "Error retrieving category",
-      error: error.message,
-    });
+    handleError(res, error, "Error retrieving category");
   }
 };
 
@@ -76,10 +77,7 @@ const updateCategory = async (req, res) => {
       category,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error updating category",
-      error: error.message,
-    });
+    handleError(res, error, "Error updating category");
   }
 };
 
@@ -98,9 +96,7 @@ const deleteCategory = async (req, res) => {
       message: "Category deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error deleting category",
-    });
+    handleError(res, error, "Error deleting category");
   }
 };
 
